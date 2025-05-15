@@ -1,59 +1,66 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <title>AR.js con Gestos Multitáctiles</title>
+    <title>Gesture Interactions - A-Frame & AR.js</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0"
+    />
 
-    <!-- Viewport seguro para móviles -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <link rel="stylesheet" href="styles.css" />
 
     <!-- A-Frame y AR.js -->
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.2/aframe/build/aframe-ar.min.js"></script>
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
-    <!-- Gestures desde arjs-gestures -->
-    <script src="js/arjs-gestures.js"></script>
-
-    <style>
-      body {
-        margin: 0;
-        overflow: hidden;
-        touch-action: none; /* evita zoom por CSS */
-      }
-    </style>
-
+    <!-- Evitar zoom navegador móvil -->
     <script>
-      // Solo prevenir el zoom por gestos del navegador
-      document.addEventListener('gesturestart', (e) => e.preventDefault());
-      document.addEventListener('gesturechange', (e) => e.preventDefault());
-      document.addEventListener('gestureend', (e) => e.preventDefault());
+      document.addEventListener("gesturestart", (e) => e.preventDefault());
+      document.addEventListener("gesturechange", (e) => e.preventDefault());
+      document.addEventListener("gestureend", (e) => e.preventDefault());
     </script>
+
+    <!-- Componentes personalizados -->
+    <script src="/js/gesture-detector.js"></script>
+    <script src="/js/gesture-handler.js"></script>
   </head>
+
   <body>
     <a-scene
-      embedded
       arjs
-      vr-mode-ui="enabled: false"
+      embedded
       renderer="logarithmicDepthBuffer: true;"
+      vr-mode-ui="enabled: false"
+      gesture-detector
+      id="scene"
     >
-      <a-entity camera></a-entity>
+      <!-- Carga de modelo 3D local -->
+      <a-assets>
+        <a-asset-item id="modelo-local" src="models/craneo.glb"></a-asset-item>
+      </a-assets>
 
+      <!-- Uso de marcador personalizado .patt -->
       <a-marker
         type="pattern"
         url="marker/skullapp.patt"
         raycaster="objects: .clickable"
-        cursor="fuse: false; rayOrigin: mouse"
-        gesture-detector
+        emitevents="true"
+        cursor="fuse: false; rayOrigin: mouse;"
+        id="markerA"
       >
         <a-entity
-          id="modelo"
-          gltf-model="models/craneo.glb"
-          class="clickable"
+          id="modelo-3d"
+          gltf-model="#modelo-local"
+          position="0 0 0"
           scale="0.5 0.5 0.5"
-          rotation="0 0 0"
+          class="clickable"
           gesture-handler
         ></a-entity>
       </a-marker>
+
+      <a-entity camera></a-entity>
     </a-scene>
   </body>
 </html>
