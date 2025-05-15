@@ -4,40 +4,29 @@
     <meta charset="utf-8">
     <title>AR.js con Gestos Multitáctiles</title>
 
-    <!-- Esto evita zoom desde navegador -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Viewport seguro para móviles -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
 
     <!-- A-Frame y AR.js -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.2/aframe/build/aframe-ar.min.js"></script>
 
-    <!-- Gestures -->
+    <!-- Gestures desde arjs-gestures -->
     <script src="js/arjs-gestures.js"></script>
 
     <style>
-      html, body {
+      body {
         margin: 0;
-        padding: 0;
         overflow: hidden;
-        touch-action: none; /* evitar zoom por CSS */
+        touch-action: none; /* evita zoom por CSS */
       }
     </style>
 
-    <!-- 💡 Esta parte bloquea gestos de zoom del navegador móvil -->
     <script>
-      document.addEventListener('gesturestart', function (e) {
-        e.preventDefault();
-      });
-      document.addEventListener('gesturechange', function (e) {
-        e.preventDefault();
-      });
-      document.addEventListener('gestureend', function (e) {
-        e.preventDefault();
-      });
-
-      document.addEventListener('touchmove', function (e) {
-        if (e.scale !== 1) e.preventDefault();  // evita zoom accidental
-      }, { passive: false });
+      // Solo prevenir el zoom por gestos del navegador
+      document.addEventListener('gesturestart', (e) => e.preventDefault());
+      document.addEventListener('gesturechange', (e) => e.preventDefault());
+      document.addEventListener('gestureend', (e) => e.preventDefault());
     </script>
   </head>
   <body>
@@ -57,6 +46,7 @@
         gesture-detector
       >
         <a-entity
+          id="modelo"
           gltf-model="models/craneo.glb"
           class="clickable"
           scale="0.5 0.5 0.5"
