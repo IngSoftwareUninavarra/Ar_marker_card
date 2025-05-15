@@ -22,9 +22,82 @@
       document.addEventListener("gestureend", (e) => e.preventDefault());
     </script>
 
-    <!-- Componentes personalizados con rutas relativas -->
+    <!-- Componentes personalizados -->
     <script src="js/gesture-detector.js"></script>
     <script src="js/gesture-handler.js"></script>
+
+    <!-- Script para combinación de marcadores -->
+    <script>
+      let markerAVisible = false;
+      let markerBVisible = false;
+
+      const updateCombinadoPosition = () => {
+        const markerA = document.querySelector("#markerA");
+        const markerB = document.querySelector("#markerB");
+        const posA = new THREE.Vector3();
+        const posB = new THREE.Vector3();
+
+        markerA.object3D.getWorldPosition(posA);
+        markerB.object3D.getWorldPosition(posB);
+
+        const mid = new THREE.Vector3(
+          (posA.x + posB.x) / 2,
+          (posA.y + posB.y) / 2,
+          (posA.z + posB.z) / 2
+        );
+
+        const modeloCombinado = document.querySelector("#modeloCombinado");
+        modeloCombinado.object3D.position.copy(mid);
+      };
+
+      const checkComboState = () => {
+        const modeloA = document.querySelector("#modeloA");
+        const modeloB = document.querySelector("#modeloB");
+        const modeloCombinado = document.querySelector("#modeloCombinado");
+
+        if (markerAVisible && markerBVisible) {
+          modeloA.setAttribute("visible", false);
+          modeloB.setAttribute("visible", false);
+          modeloCombinado.setAttribute("visible", true);
+          updateCombinadoPosition();
+        } else {
+          modeloA.setAttribute("visible", markerAVisible);
+          modeloB.setAttribute("visible", markerBVisible);
+          modeloCombinado.setAttribute("visible", false);
+        }
+      };
+
+      window.addEventListener("DOMContentLoaded", () => {
+        const markerA = document.querySelector("#markerA");
+        const markerB = document.querySelector("#markerB");
+
+        markerA.addEventListener("markerFound", () => {
+          markerAVisible = true;
+          checkComboState();
+        });
+        markerA.addEventListener("markerLost", () => {
+          markerAVisible = false;
+          checkComboState();
+        });
+        markerB.addEventListener("markerFound", () => {
+          markerBVisible = true;
+          checkComboState();
+        });
+        markerB.addEventListener("markerLost", () => {
+          markerBVisible = false;
+          checkComboState();
+        });
+
+        // Componente para actualizar posición combinada en cada frame
+        AFRAME.registerComponent("update-center", {
+          tick: function () {
+            if (markerAVisible && markerBVisible) {
+              updateCombinadoPosition();
+            }
+          },
+        });
+      });
+    </script>
   </head>
 
   <body>
@@ -34,31 +107,60 @@
       renderer="logarithmicDepthBuffer: true;"
       vr-mode-ui="enabled: false"
       gesture-detector
-      id="scene"
     >
-      <!-- Carga de modelo 3D local -->
+      <!-- Modelos -->
       <a-assets>
-        <a-asset-item id="modelo-local" src="models/craneo.glb"></a-asset-item>
+        <a-asset-item id="modelo-a" src="models/modeloA.glb"></a-asset-item>
+        <a-asset-item id="modelo-b" src="models/modeloB.glb"></a-asset-item>
+        <a-asset-item id="modelo-combo" src="models/combinado.glb"></a-asset-item>
       </a-assets>
 
-      <!-- Uso de marcador personalizado .patt -->
+      <!-- Marcador A -->
       <a-marker
+        id="markerA"
         type="pattern"
-        url="marker/skullapp.patt"
+        url="marker/markerA.patt"
         raycaster="objects: .clickable"
         emitevents="true"
         cursor="fuse: false; rayOrigin: mouse;"
-        id="markerA"
       >
         <a-entity
-          id="modelo-3d"
-          gltf-model="#modelo-local"
+          id="modeloA"
+          gltf-model="#modelo-a"
           position="0 0 0"
           scale="0.5 0.5 0.5"
           class="clickable"
           gesture-handler
         ></a-entity>
       </a-marker>
+
+      <!-- Marcador B -->
+      <a-marker
+        id="markerB"
+        type="pattern"
+        url="marker/markerB.patt"
+        raycaster="objects: .clickable"
+        emitevents="true"
+        cursor="fuse: false; rayOrigin: mouse;"
+      >
+        <a-entity
+          id="modeloB"
+          gltf-model="#modelo-b"
+          position="0 0 0"
+          scale="0.5 0.5 0.5"
+          class="clickable"
+          gesture-handler
+        ></a-entity>
+      </a-marker>
+
+      <!-- Modelo combinado -->
+      <a-entity
+        id="modeloCombinado"
+        gltf-model="#modelo-combo"
+        visible="false"
+        scale="0.5 0.5 0.5"
+        update-center
+      ></a-entity>
 
       <a-entity camera></a-entity>
     </a-scene>
