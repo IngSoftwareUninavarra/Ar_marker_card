@@ -3,8 +3,9 @@
   <head>
     <meta charset="utf-8">
     <title>AR.js con Gestos Multitáctiles</title>
-    <!-- 🔒 evita zoom raro en móvil -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+
+    <!-- Esto evita zoom desde navegador -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <!-- A-Frame y AR.js -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
@@ -14,8 +15,30 @@
     <script src="js/arjs-gestures.js"></script>
 
     <style>
-      body { margin: 0; overflow: hidden; touch-action: none; }
+      html, body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        touch-action: none; /* evitar zoom por CSS */
+      }
     </style>
+
+    <!-- 💡 Esta parte bloquea gestos de zoom del navegador móvil -->
+    <script>
+      document.addEventListener('gesturestart', function (e) {
+        e.preventDefault();
+      });
+      document.addEventListener('gesturechange', function (e) {
+        e.preventDefault();
+      });
+      document.addEventListener('gestureend', function (e) {
+        e.preventDefault();
+      });
+
+      document.addEventListener('touchmove', function (e) {
+        if (e.scale !== 1) e.preventDefault();  // evita zoom accidental
+      }, { passive: false });
+    </script>
   </head>
   <body>
     <a-scene
@@ -24,10 +47,8 @@
       vr-mode-ui="enabled: false"
       renderer="logarithmicDepthBuffer: true;"
     >
-      <!-- Cámara -->
       <a-entity camera></a-entity>
 
-      <!-- Marcador con gestures SOLO DENTRO -->
       <a-marker
         type="pattern"
         url="marker/skullapp.patt"
