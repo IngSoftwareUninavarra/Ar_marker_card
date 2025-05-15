@@ -1,20 +1,48 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>AR con Marcador</title>
+    <meta charset="utf-8">
+    <title>AR.js con Gestos Multitáctiles</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- A-Frame y AR.js -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/2.0.1/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.2/aframe/build/aframe-ar.min.js"></script>
+
+    <!-- AR.js Gestures desde archivo local -->
+    <script src="js/arjs-gestures.js"></script>
+
     <style>
       body { margin: 0; overflow: hidden; }
-      #container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
     </style>
   </head>
   <body>
-    <a-scene embedded arjs>
-      <a-marker type="pattern" url="marker/skullapp.patt">
-        <a-entity gltf-model="craneo.glb" scale="0.5 0.5 0.5" position="0 0 0" rotation="0 0 0"></a-entity>
-      </a-marker>
+    <a-scene
+      embedded
+      arjs
+      gesture-detector
+      vr-mode-ui="enabled: false"
+      renderer="logarithmicDepthBuffer: true"
+    >
+      <!-- Cámara -->
       <a-entity camera></a-entity>
+
+      <!-- Patrón AR y modelo con gestos -->
+      <a-marker
+        type="pattern"
+        url="marker/skullapp.patt"
+        raycaster="objects: .clickable"
+        cursor="fuse: false; rayOrigin: mouse"
+      >
+        <a-entity
+          id="modelo"
+          gltf-model="modelo/craneo.glb"
+          class="clickable"
+          scale="0.5 0.5 0.5"
+          rotation="0 0 0"
+          gesture-handler
+        ></a-entity>
+      </a-marker>
     </a-scene>
   </body>
 </html>
