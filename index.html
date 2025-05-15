@@ -13,7 +13,13 @@
   </head>
 
   <body>
-    <a-scene embedded arjs>
+    <a-scene
+      embedded
+      arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;
+            trackingMethod: best; 
+            sourceWidth: 1280; sourceHeight: 720;
+            displayWidth: 1280; displayHeight: 720;">
+
       <a-assets>
         <a-asset-item id="modelo" src="craneo.glb"></a-asset-item>
       </a-assets>
