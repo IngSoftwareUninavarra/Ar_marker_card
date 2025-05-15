@@ -2,67 +2,19 @@
 <html>
   <head>
     <title>AR con Marcador</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/2.0.1/aframe/build/aframe-ar.js"></script>
-    <script src="js/aframe-extras.min.js"></script>
-    <script src="js/aframe-super-hands.min.js"></script>
     <style>
       body { margin: 0; overflow: hidden; }
+      #container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
     </style>
   </head>
-
   <body>
-    <a-scene
-      embedded
-      arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;
-            trackingMethod: best; 
-            sourceWidth: 1280; sourceHeight: 720;
-            displayWidth: 1280; displayHeight: 720;">
-
-      <a-assets>
-        <a-asset-item id="modelo" src="craneo.glb"></a-asset-item>
-      </a-assets>
-
+    <a-scene embedded arjs>
       <a-marker type="pattern" url="marker/skullapp.patt">
-        <a-entity
-          gltf-model="#modelo"
-          scale="0.5 0.5 0.5"
-          position="0 0 0"
-          class="interactive"
-          gesture-detector
-          rotation-listener
-          super-hands>
-        </a-entity>
+        <a-entity gltf-model="modelo.glb" scale="0.5 0.5 0.5" position="0 0 0" rotation="0 0 0"></a-entity>
       </a-marker>
-
       <a-entity camera></a-entity>
-
-      <!-- Mano virtual que detecta e interactúa -->
-      <a-entity
-        laser-controls="hand: right"
-        raycaster="objects: .interactive"
-        super-hands
-        sphere-collider="objects: .interactive"
-        collision-filter="group: hand; collidesWith: interactive">
-      </a-entity>
     </a-scene>
-
-    <script>
-      AFRAME.registerComponent("rotation-listener", {
-        init: function () {
-          this.el.addEventListener("dragstart", evt => {
-            this.startRotation = this.el.object3D.rotation.y;
-            this.startX = evt.detail.cursorEl.components.raycaster.ray.origin.x;
-          });
-
-          this.el.addEventListener("dragmove", evt => {
-            const currentX = evt.detail.cursorEl.components.raycaster.ray.origin.x;
-            const deltaX = currentX - this.startX;
-            this.el.object3D.rotation.y = this.startRotation + deltaX * 5;
-          });
-        }
-      });
-    </script>
   </body>
 </html>
