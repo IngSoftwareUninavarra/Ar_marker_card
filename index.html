@@ -3,40 +3,40 @@
   <head>
     <meta charset="utf-8">
     <title>AR.js con Gestos Multitáctiles</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 🔒 evita zoom raro en móvil -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
 
     <!-- A-Frame y AR.js -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.2/aframe/build/aframe-ar.min.js"></script>
 
-    <!-- AR.js Gestures desde archivo local -->
+    <!-- Gestures -->
     <script src="js/arjs-gestures.js"></script>
 
     <style>
-      body { margin: 0; overflow: hidden; }
+      body { margin: 0; overflow: hidden; touch-action: none; }
     </style>
   </head>
   <body>
     <a-scene
       embedded
       arjs
-      gesture-detector
       vr-mode-ui="enabled: false"
-      renderer="logarithmicDepthBuffer: true"
+      renderer="logarithmicDepthBuffer: true;"
     >
       <!-- Cámara -->
       <a-entity camera></a-entity>
 
-      <!-- Patrón AR y modelo con gestos -->
+      <!-- Marcador con gestures SOLO DENTRO -->
       <a-marker
         type="pattern"
         url="marker/skullapp.patt"
         raycaster="objects: .clickable"
         cursor="fuse: false; rayOrigin: mouse"
+        gesture-detector
       >
         <a-entity
-          id="model"
-          gltf-model="models/craneo.glb"
+          gltf-model="modelo/craneo.glb"
           class="clickable"
           scale="0.5 0.5 0.5"
           rotation="0 0 0"
