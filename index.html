@@ -1,73 +1,19 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>AR con Marcador - Gestos Móviles</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- A-Frame y AR.js -->
+    <title>AR con Marcador</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/2.0.1/aframe/build/aframe-ar.js"></script>
-
-    <!-- Gesture detector y manipulación multitáctil desde CDN confiable -->
-    <script src="https://cdn.jsdelivr.net/npm/aframe-gesture-detector@3.3.0/dist/aframe-gesture-detector.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-touch-controls-component/dist/aframe-touch-controls-component.min.js"></script>
-
-    <!-- Componentes de manipulación -->
-    <script>
-      AFRAME.registerComponent("manipulate-touch", {
-        init: function () {
-          const el = this.el;
-          this.initialScale = el.object3D.scale.clone();
-          this.scaleFactor = 1;
-
-          el.addEventListener("onefingermove", (e) => {
-            const d = e.detail.positionChange;
-            el.object3D.position.x += d.x * 0.01;
-            el.object3D.position.y += d.y * 0.01;
-          });
-
-          el.addEventListener("twofingermove", (e) => {
-            el.object3D.rotation.y += e.detail.spreadChange * 0.01;
-          });
-
-          el.addEventListener("pinchmove", (e) => {
-            this.scaleFactor *= e.detail.scaleChange;
-            this.scaleFactor = Math.min(Math.max(this.scaleFactor, 0.3), 3);
-            el.object3D.scale.set(
-              this.initialScale.x * this.scaleFactor,
-              this.initialScale.y * this.scaleFactor,
-              this.initialScale.z * this.scaleFactor
-            );
-          });
-        },
-      });
-    </script>
-
     <style>
       body { margin: 0; overflow: hidden; }
+      #container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
     </style>
   </head>
   <body>
-    <a-scene
-      embedded
-      arjs
-      gesture-detector
-      touch-controls
-      vr-mode-ui="enabled: false">
-
-      <!-- Marcador AR -->
+    <a-scene embedded arjs>
       <a-marker type="pattern" url="marker/skullapp.patt">
-        <a-entity
-          id="modelo"
-          gltf-model="craneo.glb"
-          class="cantap"
-          manipulate-touch
-          scale="0.5 0.5 0.5"
-          rotation="0 0 0"
-          position="0 0 0">
-        </a-entity>
+        <a-entity gltf-model="craneo.glb" scale="0.5 0.5 0.5" position="0 0 0" rotation="0 0 0"></a-entity>
       </a-marker>
-
       <a-entity camera></a-entity>
     </a-scene>
   </body>
