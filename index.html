@@ -35,6 +35,8 @@
         const markerA = document.querySelector("#markerA");
         const markerB = document.querySelector("#markerB");
         const modeloCombinado = document.querySelector("#modeloCombinado");
+        const modeloA = document.querySelector("#modeloA");
+        const modeloB = document.querySelector("#modeloB");
 
         const posA = new THREE.Vector3();
         const posB = new THREE.Vector3();
@@ -42,10 +44,8 @@
         markerA.object3D.getWorldPosition(posA);
         markerB.object3D.getWorldPosition(posB);
 
-        // Calcular distancia entre los marcadores
         const distance = posA.distanceTo(posB);
 
-        // Calcular punto medio
         const mid = new THREE.Vector3(
           (posA.x + posB.x) / 2,
           (posA.y + posB.y) / 2,
@@ -54,9 +54,9 @@
 
         modeloCombinado.object3D.position.copy(mid);
 
-        // Mostrar u ocultar modelos según la distancia
-        const modeloA = document.querySelector("#modeloA");
-        const modeloB = document.querySelector("#modeloB");
+        // Mostrar texto con la distancia
+        const texto = document.querySelector("#distanciaTexto");
+        texto.setAttribute("text", `value: Distancia: ${distance.toFixed(2)} m`);
 
         if (distance < 0.7) {
           modeloA.setAttribute("visible", false);
@@ -117,9 +117,9 @@
       >
       <!-- Modelos -->
       <a-assets>
-        <a-asset-item id="modelo-a" src="models/craneo.glb"></a-asset-item>
-        <a-asset-item id="modelo-b" src="models/craneo_sup.glb"></a-asset-item>
-        <a-asset-item id="modelo-combo" src="models/nose.glb"></a-asset-item>
+        <a-asset-item id="modelo-a" src="models/craneo_sup.glb"></a-asset-item>
+        <a-asset-item id="modelo-b" src="models/mandibula.glb"></a-asset-item>
+        <a-asset-item id="modelo-combo" src="models/craneo_full.glb"></a-asset-item>
       </a-assets>
 
       <!-- Marcador A -->
@@ -167,6 +167,13 @@
         visible="false"
         scale="0.5 0.5 0.5"
         update-center
+      ></a-entity>
+
+      <a-entity
+        id="distanciaTexto"
+        position="0 0 -1"
+        text="value: Distancia: ---; color: #FFEB3B; width: 2"
+        visible="true"
       ></a-entity>
 
       <a-entity camera></a-entity>
