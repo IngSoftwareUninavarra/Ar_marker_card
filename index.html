@@ -34,37 +34,44 @@
       const updateCombinadoPosition = () => {
         const markerA = document.querySelector("#markerA");
         const markerB = document.querySelector("#markerB");
+        const modeloCombinado = document.querySelector("#modeloCombinado");
+
         const posA = new THREE.Vector3();
         const posB = new THREE.Vector3();
 
         markerA.object3D.getWorldPosition(posA);
         markerB.object3D.getWorldPosition(posB);
 
+        // Calcular distancia entre los marcadores
+        const distance = posA.distanceTo(posB);
+
+        // Calcular punto medio
         const mid = new THREE.Vector3(
           (posA.x + posB.x) / 2,
           (posA.y + posB.y) / 2,
           (posA.z + posB.z) / 2
         );
 
-        const modeloCombinado = document.querySelector("#modeloCombinado");
         modeloCombinado.object3D.position.copy(mid);
-      };
 
-      const checkComboState = () => {
+        // Mostrar u ocultar modelos según la distancia
         const modeloA = document.querySelector("#modeloA");
         const modeloB = document.querySelector("#modeloB");
-        const modeloCombinado = document.querySelector("#modeloCombinado");
 
-        if (markerAVisible && markerBVisible) {
+        if (distance < 0.7) {
           modeloA.setAttribute("visible", false);
           modeloB.setAttribute("visible", false);
           modeloCombinado.setAttribute("visible", true);
-          updateCombinadoPosition();
         } else {
           modeloA.setAttribute("visible", markerAVisible);
           modeloB.setAttribute("visible", markerBVisible);
           modeloCombinado.setAttribute("visible", false);
         }
+      };
+
+      const checkComboState = () => {
+        const modeloCombinado = document.querySelector("#modeloCombinado");
+        modeloCombinado.setAttribute("visible", false); // se ocultará hasta que estén cerca
       };
 
       window.addEventListener("DOMContentLoaded", () => {
@@ -88,7 +95,6 @@
           checkComboState();
         });
 
-        // Componente para actualizar posición combinada en cada frame
         AFRAME.registerComponent("update-center", {
           tick: function () {
             if (markerAVisible && markerBVisible) {
@@ -98,6 +104,7 @@
         });
       });
     </script>
+
   </head>
 
   <body>
