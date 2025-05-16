@@ -101,13 +101,13 @@
   </head>
 
   <body>
-    <a-scene
-      arjs
-      embedded
-      renderer="logarithmicDepthBuffer: true;"
-      vr-mode-ui="enabled: false"
-      gesture-detector
-    >
+      <a-scene
+        embedded
+        arjs="trackingMethod: best; sourceType: webcam;"
+        renderer="logarithmicDepthBuffer: true;"
+        vr-mode-ui="enabled: false"
+        gesture-detector
+      >
       <!-- Modelos -->
       <a-assets>
         <a-asset-item id="modelo-a" src="models/craneo.glb"></a-asset-item>
