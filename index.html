@@ -15,7 +15,7 @@
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
-    <!-- Evitar zoom navegador móvil -->
+    <!-- Evitar zoom en móviles -->
     <script>
       document.addEventListener("gesturestart", (e) => e.preventDefault());
       document.addEventListener("gesturechange", (e) => e.preventDefault());
@@ -26,17 +26,20 @@
     <script src="js/gesture-detector.js"></script>
     <script src="js/gesture-handler.js"></script>
 
-    <!-- Script para combinación de marcadores -->
+    <!-- Lógica AR -->
     <script>
       let markerAVisible = false;
       let markerBVisible = false;
+      const THRESHOLD = 0.7;
 
       const updateCombinadoPosition = () => {
         const markerA = document.querySelector("#markerA");
         const markerB = document.querySelector("#markerB");
-        const modeloCombinado = document.querySelector("#modeloCombinado");
         const modeloA = document.querySelector("#modeloA");
         const modeloB = document.querySelector("#modeloB");
+        const modeloCombinado = document.querySelector("#modeloCombinado");
+        const texto = document.querySelector("#distanciaTexto");
+        const linea = document.querySelector("#lineaDistancia");
 
         const posA = new THREE.Vector3();
         const posB = new THREE.Vector3();
@@ -45,23 +48,24 @@
         markerB.object3D.getWorldPosition(posB);
 
         const distance = posA.distanceTo(posB);
-
-        const mid = new THREE.Vector3(
-          (posA.x + posB.x) / 2,
-          (posA.y + posB.y) / 2,
-          (posA.z + posB.z) / 2
-        );
+        const mid = new THREE.Vector3().addVectors(posA, posB).multiplyScalar(0.5);
 
         modeloCombinado.object3D.position.copy(mid);
-
-        // Mostrar texto con la distancia
-        const texto = document.querySelector("#distanciaTexto");
         texto.setAttribute("text", `value: Distancia: ${distance.toFixed(2)} m`);
+        texto.object3D.position.copy(mid.clone().add(new THREE.Vector3(0, 0.1, 0)));
 
-        if (distance < 0.7) {
+        linea.setAttribute("line", {
+          start: `${posA.x} ${posA.y} ${posA.z}`,
+          end: `${posB.x} ${posB.y} ${posB.z}`,
+          color: distance < THRESHOLD ? "lime" : "red"
+        });
+
+        if (distance < THRESHOLD) {
           modeloA.setAttribute("visible", false);
           modeloB.setAttribute("visible", false);
           modeloCombinado.setAttribute("visible", true);
+          modeloCombinado.setAttribute("scale", "0 0 0"); // Reinicia escala
+          modeloCombinado.emit("mostrarCombinado");       // Lanza animación
         } else {
           modeloA.setAttribute("visible", markerAVisible);
           modeloB.setAttribute("visible", markerBVisible);
@@ -71,7 +75,7 @@
 
       const checkComboState = () => {
         const modeloCombinado = document.querySelector("#modeloCombinado");
-        modeloCombinado.setAttribute("visible", false); // se ocultará hasta que estén cerca
+        modeloCombinado.setAttribute("visible", false);
       };
 
       window.addEventListener("DOMContentLoaded", () => {
@@ -99,22 +103,24 @@
           tick: function () {
             if (markerAVisible && markerBVisible) {
               updateCombinadoPosition();
+            } else {
+              document.querySelector("#lineaDistancia").setAttribute("line", "start: 0 0 0; end: 0 0 0");
+              document.querySelector("#distanciaTexto").setAttribute("text", "value: Distancia: ---");
             }
-          },
+          }
         });
       });
     </script>
-
   </head>
 
   <body>
-      <a-scene
-        embedded
-        arjs="trackingMethod: best; sourceType: webcam;"
-        renderer="logarithmicDepthBuffer: true;"
-        vr-mode-ui="enabled: false"
-        gesture-detector
-      >
+    <a-scene
+      embedded
+      arjs="trackingMethod: best; sourceType: webcam;"
+      renderer="logarithmicDepthBuffer: true;"
+      vr-mode-ui="enabled: false"
+      gesture-detector
+    >
       <!-- Modelos -->
       <a-assets>
         <a-asset-item id="modelo-a" src="models/craneo_sup.glb"></a-asset-item>
@@ -160,20 +166,36 @@
         ></a-entity>
       </a-marker>
 
-      <!-- Modelo combinado -->
+      <!-- Modelo combinado con animación -->
       <a-entity
         id="modeloCombinado"
         gltf-model="#modelo-combo"
         visible="false"
         scale="0.5 0.5 0.5"
         update-center
-      ></a-entity>
+      >
+        <a-animation
+          attribute="scale"
+          begin="mostrarCombinado"
+          from="0 0 0"
+          to="0.5 0.5 0.5"
+          dur="500"
+          easing="ease-out"
+        ></a-animation>
+      </a-entity>
 
+      <!-- Texto de distancia -->
       <a-entity
         id="distanciaTexto"
-        position="0 0 -1"
-        text="value: Distancia: ---; color: #FFEB3B; width: 2"
+        text="value: Distancia: ---; color: yellow; width: 2"
+        position="0 0 0"
         visible="true"
+      ></a-entity>
+
+      <!-- Línea dinámica entre marcadores -->
+      <a-entity
+        id="lineaDistancia"
+        line="start: 0 0 0; end: 0 0 0; color: red"
       ></a-entity>
 
       <a-entity camera></a-entity>
