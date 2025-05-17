@@ -4,7 +4,11 @@
     <title>Gesture Interactions - A-Frame & AR.js</title>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0"
+    />
+
     <link rel="stylesheet" href="styles.css" />
 
     <!-- A-Frame y AR.js -->
@@ -13,9 +17,9 @@
 
     <!-- Evitar zoom en móviles -->
     <script>
-      document.addEventListener("gesturestart", e => e.preventDefault());
-      document.addEventListener("gesturechange", e => e.preventDefault());
-      document.addEventListener("gestureend", e => e.preventDefault());
+      document.addEventListener("gesturestart", (e) => e.preventDefault());
+      document.addEventListener("gesturechange", (e) => e.preventDefault());
+      document.addEventListener("gestureend", (e) => e.preventDefault());
     </script>
 
     <!-- Componentes personalizados -->
@@ -33,7 +37,6 @@
         const markerB = document.querySelector("#markerB");
         const modeloA = document.querySelector("#modeloA");
         const modeloB = document.querySelector("#modeloB");
-        const anchor = document.querySelector("#anchorCombinado");
         const modeloCombinado = document.querySelector("#modeloCombinado");
         const texto = document.querySelector("#distanciaTexto");
         const linea = document.querySelector("#lineaDistancia");
@@ -47,27 +50,24 @@
         const distance = posA.distanceTo(posB);
         const mid = new THREE.Vector3().addVectors(posA, posB).multiplyScalar(0.5);
 
-        // Posicionar anchor (contenedor del modelo combinado)
-        anchor.object3D.position.copy(mid);
-
-        // Posicionar texto
-        texto.setAttribute("position", `${mid.x} ${mid.y + 0.1} ${mid.z}`);
+        modeloCombinado.object3D.position.copy(mid);
         texto.setAttribute("text", `value: Distancia: ${distance.toFixed(2)} m`);
+        texto.object3D.position.copy(mid.clone().add(new THREE.Vector3(0, 0.1, 0)));
 
-        // Dibujar línea entre marcadores
         linea.setAttribute("line", {
           start: `${posA.x} ${posA.y} ${posA.z}`,
           end: `${posB.x} ${posB.y} ${posB.z}`,
           color: distance < THRESHOLD ? "lime" : "red"
         });
 
-        // Mostrar u ocultar modelos
         if (distance < THRESHOLD) {
-          modeloA.setAttribute("visible", false);
-          modeloB.setAttribute("visible", false);
-          modeloCombinado.setAttribute("scale", "0 0 0");
-          modeloCombinado.setAttribute("visible", true);
-          modeloCombinado.emit("mostrarCombinado");
+        modeloA.setAttribute("visible", false);
+        modeloB.setAttribute("visible", false);
+
+        modeloCombinado.setAttribute("scale", "0 0 0");  // 1. Reinicia escala ANTES
+        modeloCombinado.setAttribute("visible", true);   // 2. Hace visible
+        modeloCombinado.emit("mostrarCombinado");        // 3. Lanza animación
+
         } else {
           modeloA.setAttribute("visible", markerAVisible);
           modeloB.setAttribute("visible", markerBVisible);
@@ -139,14 +139,15 @@
         emitevents="true"
         cursor="fuse: false; rayOrigin: mouse;"
       >
-        <a-entity
-          id="modeloA"
-          gltf-model="#modelo-a"
-          position="0 0 0"
-          scale="2 2 2"
-          class="clickable"
-          gesture-handler
-        ></a-entity>
+      <a-entity
+        id="modeloA"
+        gltf-model="#modelo-a"
+        position="0 0 0"
+        scale="2 2 2"
+        class="clickable"
+        gesture-handler
+      ></a-entity>
+
       </a-marker>
 
       <!-- Marcador B -->
@@ -158,26 +159,26 @@
         emitevents="true"
         cursor="fuse: false; rayOrigin: mouse;"
       >
-        <a-entity
-          id="modeloB"
-          gltf-model="#modelo-b"
-          position="0 0 0"
-          scale="2 2 2"
-          class="clickable"
-          gesture-handler
-        ></a-entity>
+      <a-entity
+        id="modeloB"
+        gltf-model="#modelo-b"
+        position="0 0 0"
+        scale="2 2 2"
+        class="clickable"
+        gesture-handler
+      ></a-entity>
+
       </a-marker>
 
-      <!-- Contenedor flotante para el modelo combinado -->
-      <a-entity id="anchorCombinado">
-        <a-entity
-          id="modeloCombinado"
-          gltf-model="#modelo-combo"
-          visible="false"
-          scale="2 2 2"
-          animation__show="property: scale; startEvents: mostrarCombinado; from: 0 0 0; to: 2 2 2; dur: 500; easing: ease-out"
-        ></a-entity>
-      </a-entity>
+      <!-- Modelo combinado con animación -->
+      <a-entity
+        id="modeloCombinado"
+        gltf-model="#modelo-combo"
+        visible="false"
+        scale="2 2 2"
+        update-center
+        animation__show="property: scale; startEvents: mostrarCombinado; from: 0 0 0; to: 2 2 2; dur: 500; easing: ease-out"
+      ></a-entity>
 
       <!-- Texto de distancia -->
       <a-entity
@@ -188,7 +189,10 @@
       ></a-entity>
 
       <!-- Línea dinámica entre marcadores -->
-      <a-entity id="lineaDistancia" line="start: 0 0 0; end: 0 0 0; color: red"></a-entity>
+      <a-entity
+        id="lineaDistancia"
+        line="start: 0 0 0; end: 0 0 0; color: red"
+      ></a-entity>
 
       <a-entity camera></a-entity>
     </a-scene>
