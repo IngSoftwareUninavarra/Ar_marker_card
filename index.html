@@ -61,11 +61,13 @@
         });
 
         if (distance < THRESHOLD) {
-          modeloA.setAttribute("visible", false);
-          modeloB.setAttribute("visible", false);
-          modeloCombinado.setAttribute("visible", true);
-          modeloCombinado.setAttribute("scale", "0 0 0"); // Reinicia escala
-          modeloCombinado.emit("mostrarCombinado");       // Lanza animación
+        modeloA.setAttribute("visible", false);
+        modeloB.setAttribute("visible", false);
+
+        modeloCombinado.setAttribute("scale", "0 0 0");  // 1. Reinicia escala ANTES
+        modeloCombinado.setAttribute("visible", true);   // 2. Hace visible
+        modeloCombinado.emit("mostrarCombinado");        // 3. Lanza animación
+
         } else {
           modeloA.setAttribute("visible", markerAVisible);
           modeloB.setAttribute("visible", markerBVisible);
