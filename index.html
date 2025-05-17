@@ -47,20 +47,24 @@
         const distance = posA.distanceTo(posB);
         const mid = new THREE.Vector3().addVectors(posA, posB).multiplyScalar(0.5);
 
-        anchor.object3D.position.copy(mid);  // Posiciona el contenedor del modelo
-        texto.setAttribute("text", `value: Distancia: ${distance.toFixed(2)} m`);
-        texto.object3D.position.copy(mid.clone().add(new THREE.Vector3(0, 0.1, 0)));
+        // Posicionar anchor (contenedor del modelo combinado)
+        anchor.object3D.position.copy(mid);
 
+        // Posicionar texto
+        texto.setAttribute("position", `${mid.x} ${mid.y + 0.1} ${mid.z}`);
+        texto.setAttribute("text", `value: Distancia: ${distance.toFixed(2)} m`);
+
+        // Dibujar línea entre marcadores
         linea.setAttribute("line", {
           start: `${posA.x} ${posA.y} ${posA.z}`,
           end: `${posB.x} ${posB.y} ${posB.z}`,
           color: distance < THRESHOLD ? "lime" : "red"
         });
 
+        // Mostrar u ocultar modelos
         if (distance < THRESHOLD) {
           modeloA.setAttribute("visible", false);
           modeloB.setAttribute("visible", false);
-
           modeloCombinado.setAttribute("scale", "0 0 0");
           modeloCombinado.setAttribute("visible", true);
           modeloCombinado.emit("mostrarCombinado");
