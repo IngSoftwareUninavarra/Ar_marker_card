@@ -61,13 +61,10 @@
         });
 
         if (distance < THRESHOLD) {
-        modeloA.setAttribute("visible", false);
-        modeloB.setAttribute("visible", false);
-
-        modeloCombinado.setAttribute("scale", "0 0 0");  // 1. Reinicia escala ANTES
-        modeloCombinado.setAttribute("visible", true);   // 2. Hace visible
-        modeloCombinado.emit("mostrarCombinado");        // 3. Lanza animación
-
+          modeloA.setAttribute("visible", false);
+          modeloB.setAttribute("visible", false);
+          modeloCombinado.setAttribute("visible", true);
+          modeloCombinado.setAttribute("scale", "2 2 2");
         } else {
           modeloA.setAttribute("visible", markerAVisible);
           modeloB.setAttribute("visible", markerBVisible);
@@ -139,15 +136,14 @@
         emitevents="true"
         cursor="fuse: false; rayOrigin: mouse;"
       >
-      <a-entity
-        id="modeloA"
-        gltf-model="#modelo-a"
-        position="0 0 0"
-        scale="2 2 2"
-        class="clickable"
-        gesture-handler
-      ></a-entity>
-
+        <a-entity
+          id="modeloA"
+          gltf-model="#modelo-a"
+          position="0 0 0"
+          scale="2 2 2"
+          class="clickable"
+          gesture-handler
+        ></a-entity>
       </a-marker>
 
       <!-- Marcador B -->
@@ -159,25 +155,23 @@
         emitevents="true"
         cursor="fuse: false; rayOrigin: mouse;"
       >
-      <a-entity
-        id="modeloB"
-        gltf-model="#modelo-b"
-        position="0 0 0"
-        scale="2 2 2"
-        class="clickable"
-        gesture-handler
-      ></a-entity>
-
+        <a-entity
+          id="modeloB"
+          gltf-model="#modelo-b"
+          position="0 0 0"
+          scale="2 2 2"
+          class="clickable"
+          gesture-handler
+        ></a-entity>
       </a-marker>
 
-      <!-- Modelo combinado con animación -->
+      <!-- Modelo combinado (sin animación) -->
       <a-entity
         id="modeloCombinado"
         gltf-model="#modelo-combo"
         visible="false"
         scale="2 2 2"
         update-center
-        animation__show="property: scale; startEvents: mostrarCombinado; from: 0 0 0; to: 2 2 2; dur: 500; easing: ease-out"
       ></a-entity>
 
       <!-- Texto de distancia -->
