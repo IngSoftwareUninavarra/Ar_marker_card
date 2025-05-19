@@ -75,7 +75,7 @@
           );
           modeloCombinado.object3D.rotation.copy(avgRot);
 
-          modeloCombinado.setAttribute("scale", "2 2 2");
+          modeloCombinado.setAttribute("scale", "3 3 3");
           modeloCombinado.setAttribute("visible", true);
         } else {
           modeloA.setAttribute("visible", markerAVisible);
@@ -152,7 +152,7 @@
           id="modeloA"
           gltf-model="#modelo-a"
           position="0 0 0"
-          scale="2 2 2"
+          scale="3 3 3"
           class="clickable"
           gesture-handler
         ></a-entity>
@@ -171,7 +171,7 @@
           id="modeloB"
           gltf-model="#modelo-b"
           position="0 0 0"
-          scale="2 2 2"
+          scale="3 3 3"
           class="clickable"
           gesture-handler
         ></a-entity>
@@ -182,7 +182,7 @@
         id="modeloCombinado"
         gltf-model="#modelo-combo"
         visible="false"
-        scale="2 2 2"
+        scale="3 3 3"
         class="clickable"
         gesture-handler
         update-center
