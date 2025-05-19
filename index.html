@@ -43,17 +43,18 @@
 
         const posA = new THREE.Vector3();
         const posB = new THREE.Vector3();
-
         markerA.object3D.getWorldPosition(posA);
         markerB.object3D.getWorldPosition(posB);
 
         const distance = posA.distanceTo(posB);
         const mid = new THREE.Vector3().addVectors(posA, posB).multiplyScalar(0.5);
 
+        // Mostrar texto
         modeloCombinado.object3D.position.copy(mid);
         texto.setAttribute("text", `value: Distancia: ${distance.toFixed(2)} m`);
         texto.object3D.position.copy(mid.clone().add(new THREE.Vector3(0, 0.1, 0)));
 
+        // Línea dinámica
         linea.setAttribute("line", {
           start: `${posA.x} ${posA.y} ${posA.z}`,
           end: `${posB.x} ${posB.y} ${posB.z}`,
@@ -63,8 +64,19 @@
         if (distance < THRESHOLD) {
           modeloA.setAttribute("visible", false);
           modeloB.setAttribute("visible", false);
-          modeloCombinado.setAttribute("visible", true);
+
+          // Obtener rotaciones promedio
+          const rotA = new THREE.Euler().copy(markerA.object3D.rotation);
+          const rotB = new THREE.Euler().copy(markerB.object3D.rotation);
+          const avgRot = new THREE.Euler(
+            (rotA.x + rotB.x) / 2,
+            (rotA.y + rotB.y) / 2,
+            (rotA.z + rotB.z) / 2
+          );
+          modeloCombinado.object3D.rotation.copy(avgRot);
+
           modeloCombinado.setAttribute("scale", "2 2 2");
+          modeloCombinado.setAttribute("visible", true);
         } else {
           modeloA.setAttribute("visible", markerAVisible);
           modeloB.setAttribute("visible", markerBVisible);
@@ -165,7 +177,7 @@
         ></a-entity>
       </a-marker>
 
-      <!-- Modelo combinado (sin animación) -->
+      <!-- Modelo combinado (con rotación y gestos) -->
       <a-entity
         id="modeloCombinado"
         gltf-model="#modelo-combo"
